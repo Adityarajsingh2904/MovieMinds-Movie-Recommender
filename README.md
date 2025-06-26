@@ -12,6 +12,14 @@ The training data comes from the TMDB 5000 Movie Dataset available on Kaggle.
 
 ## 📂 Folder Structure
 
+```text
+.
+├── app.py
+├── model/
+├── notebook86c26b4f17.ipynb
+├── requirements.txt
+├── LICENSE
+└── README.md
 ```
 
 
