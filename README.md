@@ -6,6 +6,7 @@
 ![Platform](https://img.shields.io/badge/Platform-Jupyter-lightgrey)
 
 MovieMinds is a content-based movie recommender system that suggests similar movies using metadata and cosine similarity on TMDB dataset features.
+The training data comes from the TMDB 5000 Movie Dataset available on Kaggle.
 
 ---
 
@@ -14,7 +15,8 @@ MovieMinds is a content-based movie recommender system that suggests similar mov
 ```
 MovieMinds/
 ├── app.py                     # Script for standalone inference (if used)
-├── notebookXYZ.ipynb          # Main Jupyter notebook
+├── model/                    # Saved model pickle files
+├── notebook86c26b4f17.ipynb          # Main Jupyter notebook
 ├── requirements.txt           # Dependencies
 ├── README.md                  # Project documentation
 └── .gitignore
@@ -39,7 +41,13 @@ It then recommends top-N similar movies based on input.
 - **Python 3.10**
 - **Pandas**, **Scikit-learn**, **Numpy**
 - **Jupyter Notebook**
-- TMDB Dataset
+- TMDB 5000 Movie Dataset (Kaggle)
+
+## 🔧 Generating the Similarity Model
+
+1. Download `tmdb_5000_movies.csv` and `tmdb_5000_credits.csv` from Kaggle.
+2. Run `notebook86c26b4f17.ipynb` to build the similarity matrix.
+3. Save the resulting `movie_list.pkl` and `similarity.pkl` files in the `model/` folder.
 
 ---
 
@@ -57,7 +65,13 @@ pip install -r requirements.txt
 jupyter notebook
 ```
 
-3. Run `notebookXYZ.ipynb` and follow the input prompts
+3. Run `notebook86c26b4f17.ipynb` and follow the input prompts
+4. Ensure the `model/` directory contains `movie_list.pkl` and `similarity.pkl`
+
+5. Launch the Streamlit app:
+```bash
+streamlit run app.py
+```
 
 ---
 
