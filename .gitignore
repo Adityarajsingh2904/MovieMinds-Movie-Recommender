@@ -2,6 +2,13 @@
 __pycache__/
 *.py[cod]
 
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environment and OS metadata
+.env
+.DS_Store
+
 # Model artifacts
 model/*.pkl
 
