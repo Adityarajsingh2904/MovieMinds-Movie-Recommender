@@ -13,8 +13,9 @@ MovieMinds is a content-based movie recommender system that suggests similar mov
 
 ```
 MovieMinds/
-├── app.py                     # Script for standalone inference (if used)
+├── app.py                     # Streamlit application
 ├── notebookXYZ.ipynb          # Main Jupyter notebook
+├── model/                     # Pickled similarity data
 ├── requirements.txt           # Dependencies
 ├── README.md                  # Project documentation
 └── .gitignore
@@ -59,6 +60,16 @@ jupyter notebook
 ```
 
 
+
+4. The notebook will generate two pickle files: `movie_list.pkl` and `similarity.pkl`.
+   They are saved inside a newly created `model/` folder and are required for the
+   Streamlit app.
+
+5. Launch the interface:
+
+```bash
+streamlit run app.py
+```
 
 ---
 

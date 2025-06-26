@@ -27,8 +27,19 @@ def recommend(movie):
 
 
 st.header('Movie Recommender System')
-movies = pickle.load(open('model/movie_list.pkl','rb'))
-similarity = pickle.load(open('model/similarity.pkl','rb'))
+
+model_dir = 'model'
+movie_file = os.path.join(model_dir, 'movie_list.pkl')
+sim_file = os.path.join(model_dir, 'similarity.pkl')
+
+if os.path.exists(movie_file) and os.path.exists(sim_file):
+    movies = pickle.load(open(movie_file, 'rb'))
+    similarity = pickle.load(open(sim_file, 'rb'))
+else:
+    st.error(
+        'Required model files not found. Run the notebook to generate them.'
+    )
+    st.stop()
 
 movie_list = movies['title'].values
 selected_movie = st.selectbox(
