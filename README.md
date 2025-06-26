@@ -38,6 +38,7 @@ It then recommends top-N similar movies based on input.
 
 - **Python 3.10**
 - **Pandas**, **Scikit-learn**, **Numpy**
+- **Streamlit**, **Requests**
 - **Jupyter Notebook**
 - TMDB Dataset
 
@@ -51,13 +52,19 @@ It then recommends top-N similar movies based on input.
 pip install -r requirements.txt
 ```
 
-2. 📓 Open the notebook:
+2. 🚀 Launch the Streamlit app (optional):
+
+```bash
+streamlit run app.py
+```
+
+3. 📓 Or open the notebook:
 
 ```bash
 jupyter notebook
 ```
 
-3. Run `notebookXYZ.ipynb` and follow the input prompts
+4. Run `notebook86c26b4f17.ipynb` and follow the input prompts
 
 ---
 
