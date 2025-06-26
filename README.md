@@ -82,6 +82,11 @@ jupyter notebook
 
 ---
 
+## 🔮 Future Enhancements
+
+- **Transformer-based embeddings**: Explore models like `sentence-transformers` to represent movies with rich semantic vectors for better similarity.
+- **GPT-powered tooling**: Investigate GPT-based document generation or code explanation utilities to help maintain the project.
+
 ## 📄 License
 
 This project is licensed under the MIT License.
