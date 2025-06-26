@@ -38,6 +38,7 @@ It then recommends top-N similar movies based on input.
 
 - **Python 3.10**
 - **Pandas**, **Scikit-learn**, **Numpy**
+- **Streamlit**, **Requests**
 - **Jupyter Notebook**
 - TMDB Dataset
 
@@ -51,19 +52,13 @@ It then recommends top-N similar movies based on input.
 pip install -r requirements.txt
 ```
 
-2. 🔑 Set the `TMDB_API_KEY` environment variable
 
-```bash
-export TMDB_API_KEY=<your-api-key>
-```
-
-3. 📓 Open the notebook:
 
 ```bash
 jupyter notebook
 ```
 
-4. Run `notebookXYZ.ipynb` and follow the input prompts
+
 
 ---
 
