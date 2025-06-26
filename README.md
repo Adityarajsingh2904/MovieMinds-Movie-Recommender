@@ -51,13 +51,19 @@ It then recommends top-N similar movies based on input.
 pip install -r requirements.txt
 ```
 
-2. 📓 Open the notebook:
+2. 🔑 Set the `TMDB_API_KEY` environment variable
+
+```bash
+export TMDB_API_KEY=<your-api-key>
+```
+
+3. 📓 Open the notebook:
 
 ```bash
 jupyter notebook
 ```
 
-3. Run `notebookXYZ.ipynb` and follow the input prompts
+4. Run `notebookXYZ.ipynb` and follow the input prompts
 
 ---
 
