@@ -15,6 +15,12 @@ The training data comes from the TMDB 5000 Movie Dataset available on Kaggle.
 ```
 
 
+## 📝 Repo Setup
+
+The `.gitignore` file ensures that generated folders like `__pycache__/` and
+`.ipynb_checkpoints/` aren't committed to version control. Keep this file intact
+after cloning so your repository stays clean.
+
 ---
 
 ## 🧠 How It Works
