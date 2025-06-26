@@ -52,19 +52,13 @@ It then recommends top-N similar movies based on input.
 pip install -r requirements.txt
 ```
 
-2. 🚀 Launch the Streamlit app (optional):
 
-```bash
-streamlit run app.py
-```
-
-3. 📓 Or open the notebook:
 
 ```bash
 jupyter notebook
 ```
 
-4. Run `notebook86c26b4f17.ipynb` and follow the input prompts
+
 
 ---
 
