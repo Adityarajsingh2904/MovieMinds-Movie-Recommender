@@ -13,14 +13,7 @@ The training data comes from the TMDB 5000 Movie Dataset available on Kaggle.
 ## 📂 Folder Structure
 
 ```
-MovieMinds/
-├── app.py                     # Script for standalone inference (if used)
-├── model/                    # Saved model pickle files
-├── notebook86c26b4f17.ipynb          # Main Jupyter notebook
-├── requirements.txt           # Dependencies
-├── README.md                  # Project documentation
-└── .gitignore
-```
+
 
 ---
 
@@ -40,6 +33,7 @@ It then recommends top-N similar movies based on input.
 
 - **Python 3.10**
 - **Pandas**, **Scikit-learn**, **Numpy**
+- **Streamlit**, **Requests**
 - **Jupyter Notebook**
 - TMDB 5000 Movie Dataset (Kaggle)
 
@@ -59,19 +53,13 @@ It then recommends top-N similar movies based on input.
 pip install -r requirements.txt
 ```
 
-2. 📓 Open the notebook:
+
 
 ```bash
 jupyter notebook
 ```
 
-3. Run `notebook86c26b4f17.ipynb` and follow the input prompts
-4. Ensure the `model/` directory contains `movie_list.pkl` and `similarity.pkl`
 
-5. Launch the Streamlit app:
-```bash
-streamlit run app.py
-```
 
 ---
 
