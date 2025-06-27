@@ -6,19 +6,28 @@
 ![Platform](https://img.shields.io/badge/Platform-Jupyter-lightgrey)
 
 MovieMinds is a content-based movie recommender system that suggests similar movies using metadata and cosine similarity on TMDB dataset features.
+The training data comes from the TMDB 5000 Movie Dataset available on Kaggle.
 
 ---
 
 ## 📂 Folder Structure
 
+```text
+.
+├── app.py
+├── model/
+├── notebook86c26b4f17.ipynb
+├── requirements.txt
+├── LICENSE
+└── README.md
 ```
-MovieMinds/
-├── app.py                     # Script for standalone inference (if used)
-├── notebookXYZ.ipynb          # Main Jupyter notebook
-├── requirements.txt           # Dependencies
-├── README.md                  # Project documentation
-└── .gitignore
-```
+
+
+## 📝 Repo Setup
+
+The `.gitignore` file ensures that generated folders like `__pycache__/` and
+`.ipynb_checkpoints/` aren't committed to version control. Keep this file intact
+after cloning so your repository stays clean.
 
 ---
 
@@ -38,8 +47,15 @@ It then recommends top-N similar movies based on input.
 
 - **Python 3.10**
 - **Pandas**, **Scikit-learn**, **Numpy**
+- **Streamlit**, **Requests**
 - **Jupyter Notebook**
-- TMDB Dataset
+- TMDB 5000 Movie Dataset (Kaggle)
+
+## 🔧 Generating the Similarity Model
+
+1. Download `tmdb_5000_movies.csv` and `tmdb_5000_credits.csv` from Kaggle.
+2. Run `notebook86c26b4f17.ipynb` to build the similarity matrix.
+3. Save the resulting `movie_list.pkl` and `similarity.pkl` files in the `model/` folder.
 
 ---
 
@@ -51,13 +67,31 @@ It then recommends top-N similar movies based on input.
 pip install -r requirements.txt
 ```
 
-2. 📓 Open the notebook:
+2. 🔑 Set your TMDB API key as an environment variable so posters can be fetched
+
+```bash
+export TMDB_API_KEY=<your-tmdb-key>
+```
+
+On Windows PowerShell use:
+
+```powershell
+$env:TMDB_API_KEY="<your-tmdb-key>"
+```
+
+3. ▶️ Start the application
+
+```bash
+streamlit run app.py
+```
+
+4. 📝 (Optional) Explore the notebook
 
 ```bash
 jupyter notebook
 ```
 
-3. Run `notebookXYZ.ipynb` and follow the input prompts
+
 
 ---
 
@@ -79,6 +113,11 @@ jupyter notebook
 | Avatar      | Titanic, Avengers…     |
 
 ---
+
+## 🔮 Future Enhancements
+
+- **Transformer-based embeddings**: Explore models like `sentence-transformers` to represent movies with rich semantic vectors for better similarity.
+- **GPT-powered tooling**: Investigate GPT-based document generation or code explanation utilities to help maintain the project.
 
 ## 📄 License
 

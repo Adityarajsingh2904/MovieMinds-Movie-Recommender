@@ -1,49 +1,111 @@
 import sys
 import types
 
-# stub out external modules that are not installed
-requests_stub = types.ModuleType('requests')
-requests_stub.get = lambda *args, **kwargs: None
-sys.modules['requests'] = requests_stub
+import importlib
+import builtins
+import os
 
-# create a minimal stub for streamlit so app can be imported
-st_stub = types.ModuleType('streamlit')
-# provide minimal attributes used in app.py
-st_stub.header = lambda *args, **kwargs: None
-st_stub.selectbox = lambda *args, **kwargs: None
-st_stub.button = lambda *args, **kwargs: False
-st_stub.columns = lambda n: [None]*n
-st_stub.text = lambda *args, **kwargs: None
-st_stub.image = lambda *args, **kwargs: None
-sys.modules['streamlit'] = st_stub
+import pytest
 
-import app
 
-class MockResponse:
-    def __init__(self, data):
-        self._data = data
-    def json(self):
-        return self._data
+def load_app(monkeypatch):
+    """Import the app module with stubbed dependencies."""
+    streamlit_stub = types.SimpleNamespace(
+        error=lambda *a, **k: None,
+        stop=lambda: None,
+        header=lambda *a, **k: None,
+        selectbox=lambda *a, **k: None,
+        button=lambda *a, **k: False,
+        columns=lambda n: [types.SimpleNamespace(text=lambda *a, **k: None,
+                                                image=lambda *a, **k: None) for _ in range(n)],
+    )
+    requests_stub = types.SimpleNamespace()
+    monkeypatch.setitem(sys.modules, "streamlit", streamlit_stub)
+    monkeypatch.setitem(sys.modules, "requests", requests_stub)
+    # Ensure repository root is on sys.path for imports
+    repo_root = os.path.dirname(os.path.dirname(__file__))
+    monkeypatch.syspath_prepend(repo_root)
+    if "app" in sys.modules:
+        del sys.modules["app"]
+    return importlib.import_module("app")
+
+
+class DummyMovies:
+    class TitleList(list):
+        def __eq__(self, other):
+            return [x == other for x in self]
+
+    def __init__(self, rows, indexes=None):
+        self.rows = list(rows)
+        self._indexes = list(range(len(rows))) if indexes is None else indexes
+
+    def __getitem__(self, key):
+        if isinstance(key, str):
+            if key == "title":
+                return DummyMovies.TitleList([row["title"] for row in self.rows])
+            raise KeyError(key)
+        elif isinstance(key, list):
+            selected_rows = [row for row, flag in zip(self.rows, key) if flag]
+            selected_idx = [idx for idx, flag in zip(self._indexes, key) if flag]
+            return DummyMovies(selected_rows, selected_idx)
+        else:
+            raise TypeError
+
+    @property
+    def index(self):
+        return self._indexes
+
+    class _ILoc:
+        def __init__(self, outer):
+            self.outer = outer
+        def __getitem__(self, idx):
+            row = self.outer.rows[idx]
+            return types.SimpleNamespace(**row)
+
+    @property
+    def iloc(self):
+        return DummyMovies._ILoc(self)
+
 
 def test_fetch_poster(monkeypatch):
+    app = load_app(monkeypatch)
+
+    class MockResponse:
+        def json(self):
+            return {"poster_path": "test.jpg"}
+        def raise_for_status(self):
+            pass
+
     def mock_get(url):
-        return MockResponse({'poster_path': 'test.jpg'})
-    monkeypatch.setattr(app.requests, 'get', mock_get)
-    poster = app.fetch_poster(1)
-    assert poster == 'https://image.tmdb.org/t/p/w500/test.jpg'
+        return MockResponse()
 
-def test_recommend(monkeypatch, sample_data):
-    movies, similarity = sample_data
-    monkeypatch.setattr(app, 'movies', movies, raising=False)
-    monkeypatch.setattr(app, 'similarity', similarity, raising=False)
+    monkeypatch.setattr(app.requests, "get", mock_get, raising=False)
+    monkeypatch.setenv("TMDB_API_KEY", "dummy")
 
-    calls = []
-    def mock_get(url):
-        calls.append(url)
-        return MockResponse({'poster_path': 'path.jpg'})
-    monkeypatch.setattr(app.requests, 'get', mock_get)
+    assert (
+        app.fetch_poster(123)
+        == "https://image.tmdb.org/t/p/w500/test.jpg"
+    )
 
-    names, posters = app.recommend('Movie A')
-    assert names == ['Movie B', 'Movie C', 'Movie D', 'Movie E', 'Movie F']
-    assert posters == ['https://image.tmdb.org/t/p/w500/path.jpg'] * 5
-    assert len(calls) == 5
+
+def test_recommend(monkeypatch):
+    app = load_app(monkeypatch)
+    rows = [
+        {"movie_id": 1, "title": "A"},
+        {"movie_id": 2, "title": "B"},
+        {"movie_id": 3, "title": "C"},
+    ]
+    movies = DummyMovies(rows)
+    similarity = [
+        [1, 0.1, 0.9],
+        [0.1, 1, 0.2],
+        [0.9, 0.2, 1],
+    ]
+    monkeypatch.setattr(app, "movies", movies)
+    monkeypatch.setattr(app, "similarity", similarity)
+    monkeypatch.setattr(app, "fetch_poster", lambda mid: f"url_{mid}")
+
+    names, posters = app.recommend("A")
+    assert names == ["C", "B"]
+    assert posters == ["url_3", "url_2"]
+
