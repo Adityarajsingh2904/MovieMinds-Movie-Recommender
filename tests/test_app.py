@@ -1,5 +1,6 @@
 import sys
 import types
+
 import importlib
 import builtins
 import os
@@ -107,3 +108,4 @@ def test_recommend(monkeypatch):
     names, posters = app.recommend("A")
     assert names == ["C", "B"]
     assert posters == ["url_3", "url_2"]
+

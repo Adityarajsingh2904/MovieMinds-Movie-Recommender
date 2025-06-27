@@ -3,6 +3,7 @@ import streamlit as st
 import requests
 import os
 
+
 # Load API key from environment or Streamlit secrets
 TMDB_API_KEY = os.getenv("TMDB_API_KEY") or st.secrets.get("TMDB_API_KEY", None)
 if not TMDB_API_KEY:
@@ -25,6 +26,7 @@ def fetch_poster(movie_id):
 
     return f"https://image.tmdb.org/t/p/w500/{poster_path}"
 
+
 def recommend(movie):
     if movie not in movies["title"].values:
         st.error("Selected movie not found in the dataset.")
@@ -45,7 +47,9 @@ def recommend(movie):
         recommended_movie_posters.append(fetch_poster(movie_id))
         recommended_movie_names.append(movies.iloc[i[0]].title)
 
+
     return recommended_movie_names, recommended_movie_posters
+
 
 # UI
 st.header("🎬 Movie Recommender System")
