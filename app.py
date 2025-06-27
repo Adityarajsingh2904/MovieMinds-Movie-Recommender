@@ -73,8 +73,10 @@ movie_file = os.path.join(model_dir, "movie_list.pkl")
 sim_file = os.path.join(model_dir, "similarity.pkl")
 
 if os.path.exists(movie_file) and os.path.exists(sim_file):
-    movies = pickle.load(open(movie_file, "rb"))
-    similarity = pickle.load(open(sim_file, "rb"))
+    with open(movie_file, "rb") as f:
+        movies = pickle.load(f)
+    with open(sim_file, "rb") as f:
+        similarity = pickle.load(f)
 else:
     st.error("Model files not found. Ensure movie_list.pkl and similarity.pkl exist in the 'model' folder.")
     st.stop()
