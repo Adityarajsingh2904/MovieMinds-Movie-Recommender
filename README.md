@@ -99,7 +99,8 @@ jupyter notebook
 
 - Clean recommendations using cosine similarity
 - Content-based, no login required
-- 100% offline usage
+- Requires an internet connection for movie poster retrieval
+- Offline mode possible only if poster images are cached or disabled
 
 ---
 
