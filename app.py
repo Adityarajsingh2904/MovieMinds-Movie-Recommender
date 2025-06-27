@@ -3,6 +3,14 @@ import streamlit as st
 import requests
 import os
 
+# Ensure the TMDB API key is available before continuing
+TMDB_API_KEY = os.getenv("TMDB_API_KEY")
+if not TMDB_API_KEY:
+    st.error(
+        "TMDB_API_KEY environment variable not set. Please configure it to fetch movie posters."
+    )
+    st.stop()
+
 
 def fetch_poster(movie_id):
     api_key = os.getenv("TMDB_API_KEY")
@@ -12,9 +20,19 @@ def fetch_poster(movie_id):
             api_key,
         )
     )
-    data = requests.get(url)
-    data = data.json()
-    poster_path = data['poster_path']
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        st.error(f"Error fetching poster: {e}")
+        return ""
+
+    data = response.json()
+    poster_path = data.get("poster_path")
+    if not poster_path:
+        st.error("Poster not found for the selected movie")
+        return ""
+
     full_path = "https://image.tmdb.org/t/p/w500/" + poster_path
     return full_path
 
