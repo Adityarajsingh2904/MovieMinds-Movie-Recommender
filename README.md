@@ -95,7 +95,7 @@ jupyter notebook
 
 ---
 
-## ✅ Testing and Linting
+## 🛠 Development
 
 To run checks locally, install the dependencies and execute:
 
