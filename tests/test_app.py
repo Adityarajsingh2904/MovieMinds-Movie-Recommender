@@ -132,3 +132,61 @@ def test_recommend(monkeypatch):
     assert names == ["C", "B"]
     assert posters == ["url_3", "url_2"]
 
+
+def test_ui_handles_short_results(monkeypatch):
+    app = load_app(monkeypatch)
+
+    # Configure streamlit stub to run the UI code
+    st_mod = sys.modules["streamlit"]
+
+    class Column:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            pass
+
+        def text(self, *args, **kwargs):
+            pass
+
+        def image(self, *args, **kwargs):
+            pass
+
+    st_mod.button = lambda *a, **k: True
+    st_mod.selectbox = lambda *a, **k: "A"
+    st_mod.columns = lambda n: [Column() for _ in range(n)]
+    st_mod.text = lambda *a, **k: None
+    st_mod.image = lambda *a, **k: None
+
+    rows = [
+        {"movie_id": 1, "title": "A"},
+        {"movie_id": 2, "title": "B"},
+    ]
+    movies = DummyMovies(rows)
+    similarity = [
+        [1, 0.9],
+        [0.9, 1],
+    ]
+
+    load_counter = {"i": 0}
+
+    def fake_load(_):
+        load_counter["i"] += 1
+        return movies if load_counter["i"] == 1 else similarity
+
+    monkeypatch.setattr(pickle, "load", fake_load)
+    monkeypatch.setattr(
+        sys.modules["requests"],
+        "get",
+        lambda *a, **k: types.SimpleNamespace(
+            json=lambda: {"poster_path": "test.jpg"},
+            raise_for_status=lambda: None,
+        ),
+        raising=False,
+    )
+    monkeypatch.setenv("TMDB_API_KEY", "dummy")
+
+    import importlib
+
+    importlib.reload(app)
+
