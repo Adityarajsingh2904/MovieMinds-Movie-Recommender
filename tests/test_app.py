@@ -4,6 +4,8 @@ import types
 import importlib
 import builtins
 import os
+import io
+import pickle
 
 import pytest
 
@@ -18,10 +20,22 @@ def load_app(monkeypatch):
         button=lambda *a, **k: False,
         columns=lambda n: [types.SimpleNamespace(text=lambda *a, **k: None,
                                                 image=lambda *a, **k: None) for _ in range(n)],
+        secrets=types.SimpleNamespace(get=lambda *a, **k: None),
     )
     requests_stub = types.SimpleNamespace()
     monkeypatch.setitem(sys.modules, "streamlit", streamlit_stub)
     monkeypatch.setitem(sys.modules, "requests", requests_stub)
+    monkeypatch.setattr(os.path, "exists", lambda *a, **k: True)
+    monkeypatch.setattr(builtins, "open", lambda *a, **k: io.BytesIO())
+    class FakeMovies:
+        def __getitem__(self, key):
+            return types.SimpleNamespace(values=[])
+    fake_movie_obj = FakeMovies()
+    load_counter = {"i": 0}
+    def fake_load(f):
+        load_counter["i"] += 1
+        return fake_movie_obj if load_counter["i"] == 1 else []
+    monkeypatch.setattr(pickle, "load", fake_load)
     # Ensure repository root is on sys.path for imports
     repo_root = os.path.dirname(os.path.dirname(__file__))
     monkeypatch.syspath_prepend(repo_root)
@@ -34,6 +48,9 @@ class DummyMovies:
     class TitleList(list):
         def __eq__(self, other):
             return [x == other for x in self]
+        @property
+        def values(self):
+            return self
 
     def __init__(self, rows, indexes=None):
         self.rows = list(rows)
