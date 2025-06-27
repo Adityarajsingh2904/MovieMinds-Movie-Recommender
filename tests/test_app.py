@@ -135,6 +135,7 @@ def test_recommend(monkeypatch):
     assert posters == ["url_3", "url_2"]
 
 
+
 def test_files_loaded_with_context_manager(monkeypatch):
     entered = []
     exited = []
@@ -154,4 +155,5 @@ def test_files_loaded_with_context_manager(monkeypatch):
 
     assert len(entered) == 2
     assert len(exited) == 2
+
 

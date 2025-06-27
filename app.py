@@ -88,7 +88,7 @@ if st.button("Show Recommendation"):
     names, posters = recommend(selected_movie)
     if names and posters:
         cols = st.columns(5)
-        for i in range(5):
+        for i in range(len(names)):
             with cols[i]:
                 st.text(names[i])
                 st.image(posters[i])
