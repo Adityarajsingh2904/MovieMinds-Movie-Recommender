@@ -95,6 +95,20 @@ jupyter notebook
 
 ---
 
+## ✅ Testing and Linting
+
+To run checks locally, install the dependencies and execute:
+
+```bash
+pip install -r requirements.txt
+pip install flake8 pytest
+flake8
+pytest
+```
+
+These steps are also executed automatically in the [CI workflow](.github/workflows/ci.yml)
+whenever you push commits or open a pull request.
+
 ## 🌟 Features
 
 - Clean recommendations using cosine similarity
