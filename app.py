@@ -4,14 +4,19 @@ import requests
 import os
 
 
-# Load API key from environment or Streamlit secrets
-TMDB_API_KEY = os.getenv("TMDB_API_KEY") or st.secrets.get("TMDB_API_KEY", None)
-if not TMDB_API_KEY:
-    st.error("TMDB_API_KEY not set. Set it as an environment variable or in .streamlit/secrets.toml.")
-    st.stop()
+def get_api_key():
+    """Retrieve TMDB API key from environment or Streamlit secrets."""
+    key = os.getenv("TMDB_API_KEY") or st.secrets.get("TMDB_API_KEY", None)
+    if not key:
+        st.error(
+            "TMDB_API_KEY not set. Set it as an environment variable or in .streamlit/secrets.toml."
+        )
+        st.stop()
+    return key
 
 def fetch_poster(movie_id):
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={TMDB_API_KEY}&language=en-US"
+    api_key = get_api_key()
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&language=en-US"
     try:
         response = requests.get(url)
         response.raise_for_status()
