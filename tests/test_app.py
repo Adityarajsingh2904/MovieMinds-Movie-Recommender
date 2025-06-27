@@ -18,9 +18,14 @@ def load_app(monkeypatch):
         header=lambda *a, **k: None,
         selectbox=lambda *a, **k: None,
         button=lambda *a, **k: False,
-        columns=lambda n: [types.SimpleNamespace(text=lambda *a, **k: None,
-                                                image=lambda *a, **k: None) for _ in range(n)],
+        columns=lambda n: [
+            types.SimpleNamespace(
+                text=lambda *a, **k: None, image=lambda *a, **k: None
+            )
+            for _ in range(n)
+        ],
         secrets=types.SimpleNamespace(get=lambda *a, **k: None),
+        cache_data=lambda **d: (lambda f: f),
     )
     requests_stub = types.SimpleNamespace()
     monkeypatch.setitem(sys.modules, "streamlit", streamlit_stub)
@@ -93,7 +98,8 @@ def test_fetch_poster(monkeypatch):
         def raise_for_status(self):
             pass
 
-    def mock_get(url):
+    def mock_get(url, **kwargs):
+        assert kwargs.get("timeout") == 5
         return MockResponse()
 
     monkeypatch.setattr(app.requests, "get", mock_get, raising=False)

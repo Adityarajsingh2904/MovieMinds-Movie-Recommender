@@ -14,12 +14,18 @@ def get_api_key():
         st.stop()
     return key
 
+@st.cache_data(show_spinner=False)
 def fetch_poster(movie_id):
     api_key = get_api_key()
-    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&language=en-US"
+    url = (
+        f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&language=en-US"
+    )
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=5)
         response.raise_for_status()
+    except requests.exceptions.Timeout:
+        st.error("Request to TMDB timed out.")
+        return "https://via.placeholder.com/200x300?text=No+Image"
     except requests.exceptions.RequestException as e:
         st.error(f"Error fetching poster: {e}")
         return "https://via.placeholder.com/200x300?text=No+Image"
