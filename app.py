@@ -3,13 +3,10 @@ import streamlit as st
 import requests
 import os
 
-# Ensure the TMDB API key is available before continuing
-TMDB_API_KEY = os.getenv("TMDB_API_KEY")
-if not TMDB_API_KEY:
-    st.error(
-        "TMDB_API_KEY environment variable not set. Please configure it to fetch movie posters."
-    )
-    st.stop()
+
+# Global variables populated when running the app
+movies = None
+similarity = None
 
 
 def fetch_poster(movie_id):
@@ -54,43 +51,59 @@ def recommend(movie):
     return recommended_movie_names, recommended_movie_posters
 
 
-st.header('Movie Recommender System')
+def main():
+    """Run the Streamlit app."""
+    # Ensure the TMDB API key is available before continuing
+    tmdb_api_key = os.getenv("TMDB_API_KEY")
+    if not tmdb_api_key:
+        st.error(
+            "TMDB_API_KEY environment variable not set. Please configure it to fetch movie posters."
+        )
+        st.stop()
 
-model_dir = 'model'
-movie_file = os.path.join(model_dir, 'movie_list.pkl')
-sim_file = os.path.join(model_dir, 'similarity.pkl')
+    global movies, similarity
 
-if os.path.exists(movie_file) and os.path.exists(sim_file):
-    movies = pickle.load(open(movie_file, 'rb'))
-    similarity = pickle.load(open(sim_file, 'rb'))
-else:
-    st.error(
-        'Required model files not found. Run the notebook to generate them.'
+    st.header('Movie Recommender System')
+
+    model_dir = 'model'
+    movie_file = os.path.join(model_dir, 'movie_list.pkl')
+    sim_file = os.path.join(model_dir, 'similarity.pkl')
+
+    if os.path.exists(movie_file) and os.path.exists(sim_file):
+        movies = pickle.load(open(movie_file, 'rb'))
+        similarity = pickle.load(open(sim_file, 'rb'))
+    else:
+        st.error(
+            'Required model files not found. Run the notebook to generate them.'
+        )
+        st.stop()
+
+    movie_list = movies['title'].values
+    selected_movie = st.selectbox(
+        "Type or select a movie from the dropdown",
+        movie_list
     )
-    st.stop()
 
-movie_list = movies['title'].values
-selected_movie = st.selectbox(
-    "Type or select a movie from the dropdown",
-    movie_list
-)
+    if st.button('Show Recommendation'):
+        recommended_movie_names, recommended_movie_posters = recommend(selected_movie)
+        col1, col2, col3, col4, col5 = st.columns(5)
+        with col1:
+            st.text(recommended_movie_names[0])
+            st.image(recommended_movie_posters[0])
+        with col2:
+            st.text(recommended_movie_names[1])
+            st.image(recommended_movie_posters[1])
 
-if st.button('Show Recommendation'):
-    recommended_movie_names,recommended_movie_posters = recommend(selected_movie)
-    col1, col2, col3, col4, col5 = st.columns(5)
-    with col1:
-        st.text(recommended_movie_names[0])
-        st.image(recommended_movie_posters[0])
-    with col2:
-        st.text(recommended_movie_names[1])
-        st.image(recommended_movie_posters[1])
+        with col3:
+            st.text(recommended_movie_names[2])
+            st.image(recommended_movie_posters[2])
+        with col4:
+            st.text(recommended_movie_names[3])
+            st.image(recommended_movie_posters[3])
+        with col5:
+            st.text(recommended_movie_names[4])
+            st.image(recommended_movie_posters[4])
 
-    with col3:
-        st.text(recommended_movie_names[2])
-        st.image(recommended_movie_posters[2])
-    with col4:
-        st.text(recommended_movie_names[3])
-        st.image(recommended_movie_posters[3])
-    with col5:
-        st.text(recommended_movie_names[4])
-        st.image(recommended_movie_posters[4])
+
+if __name__ == "__main__":
+    main()
