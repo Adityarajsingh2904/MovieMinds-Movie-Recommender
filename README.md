@@ -67,7 +67,25 @@ It then recommends top-N similar movies based on input.
 pip install -r requirements.txt
 ```
 
+2. 🔑 Set your TMDB API key as an environment variable so posters can be fetched
 
+```bash
+export TMDB_API_KEY=<your-tmdb-key>
+```
+
+On Windows PowerShell use:
+
+```powershell
+$env:TMDB_API_KEY="<your-tmdb-key>"
+```
+
+3. ▶️ Start the application
+
+```bash
+streamlit run app.py
+```
+
+4. 📝 (Optional) Explore the notebook
 
 ```bash
 jupyter notebook
