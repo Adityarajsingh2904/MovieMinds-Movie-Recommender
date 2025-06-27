@@ -4,7 +4,10 @@ import requests
 import os
 
 
-def get_api_key():
+from typing import List, Tuple
+
+
+def get_api_key() -> str:
     """Retrieve TMDB API key from environment or Streamlit secrets."""
     key = os.getenv("TMDB_API_KEY") or st.secrets.get("TMDB_API_KEY", None)
     if not key:
@@ -15,7 +18,7 @@ def get_api_key():
     return key
 
 @st.cache_data(show_spinner=False)
-def fetch_poster(movie_id):
+def fetch_poster(movie_id: int) -> str:
     api_key = get_api_key()
     url = (
         f"https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&language=en-US"
@@ -38,7 +41,7 @@ def fetch_poster(movie_id):
     return f"https://image.tmdb.org/t/p/w500/{poster_path}"
 
 
-def recommend(movie):
+def recommend(movie: str) -> Tuple[List[str], List[str]]:
     if movie not in movies["title"].values:
         st.error("Selected movie not found in the dataset.")
         return [], []
