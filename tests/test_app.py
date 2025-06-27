@@ -10,7 +10,7 @@ import pickle
 import pytest
 
 
-def load_app(monkeypatch):
+def load_app(monkeypatch, open_func=None, pickle_loader=None):
     """Import the app module with stubbed dependencies."""
     streamlit_stub = types.SimpleNamespace(
         error=lambda *a, **k: None,
@@ -31,7 +31,9 @@ def load_app(monkeypatch):
     monkeypatch.setitem(sys.modules, "streamlit", streamlit_stub)
     monkeypatch.setitem(sys.modules, "requests", requests_stub)
     monkeypatch.setattr(os.path, "exists", lambda *a, **k: True)
-    monkeypatch.setattr(builtins, "open", lambda *a, **k: io.BytesIO())
+    if open_func is None:
+        open_func = lambda *a, **k: io.BytesIO()
+    monkeypatch.setattr(builtins, "open", open_func)
     class FakeMovies:
         def __getitem__(self, key):
             return types.SimpleNamespace(values=[])
@@ -40,7 +42,7 @@ def load_app(monkeypatch):
     def fake_load(f):
         load_counter["i"] += 1
         return fake_movie_obj if load_counter["i"] == 1 else []
-    monkeypatch.setattr(pickle, "load", fake_load)
+    monkeypatch.setattr(pickle, "load", pickle_loader or fake_load)
     # Ensure repository root is on sys.path for imports
     repo_root = os.path.dirname(os.path.dirname(__file__))
     monkeypatch.syspath_prepend(repo_root)
@@ -131,4 +133,25 @@ def test_recommend(monkeypatch):
     names, posters = app.recommend("A")
     assert names == ["C", "B"]
     assert posters == ["url_3", "url_2"]
+
+
+def test_files_loaded_with_context_manager(monkeypatch):
+    entered = []
+    exited = []
+
+    class DummyFile(io.BytesIO):
+        def __enter__(self):
+            entered.append(True)
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            exited.append(True)
+
+    def custom_open(*args, **kwargs):
+        return DummyFile()
+
+    load_app(monkeypatch, open_func=custom_open)
+
+    assert len(entered) == 2
+    assert len(exited) == 2
 
