@@ -9,6 +9,7 @@ import pickle
 
 import pytest
 
+
 def load_app(monkeypatch, open_func=None, pickle_loader=None):
     """Import the app module with stubbed dependencies."""
     streamlit_stub = types.SimpleNamespace(
@@ -48,6 +49,7 @@ def load_app(monkeypatch, open_func=None, pickle_loader=None):
     if "app" in sys.modules:
         del sys.modules["app"]
     return importlib.import_module("app")
+
 
 class DummyMovies:
     class TitleList(list):
@@ -94,6 +96,8 @@ class Timeout(Exception):
 class RequestException(Exception):
     pass
 
+
+
 def test_fetch_poster(monkeypatch):
     app = load_app(monkeypatch)
 
@@ -114,6 +118,7 @@ def test_fetch_poster(monkeypatch):
         app.fetch_poster(123)
         == "https://image.tmdb.org/t/p/w500/test.jpg"
     )
+
 
 def test_recommend(monkeypatch):
     app = load_app(monkeypatch)
@@ -137,6 +142,7 @@ def test_recommend(monkeypatch):
     assert posters == ["url_3", "url_2"]
 
 
+
 def test_files_loaded_with_context_manager(monkeypatch):
     entered = []
     exited = []
@@ -158,6 +164,8 @@ def test_files_loaded_with_context_manager(monkeypatch):
     assert len(exited) == 2
 
 
+
+
 def test_get_api_key_without_env(monkeypatch):
     app = load_app(monkeypatch)
     errors = []
@@ -170,6 +178,7 @@ def test_get_api_key_without_env(monkeypatch):
     assert app.get_api_key() is None
     assert stopped == [True]
     assert errors and "TMDB_API_KEY not set" in errors[0]
+
 
 def test_recommend_movie_not_found(monkeypatch):
     app = load_app(monkeypatch)
@@ -185,6 +194,7 @@ def test_recommend_movie_not_found(monkeypatch):
     assert posters == []
     assert any("not found" in m for m in msgs)
 
+
 @pytest.mark.parametrize(
     "exc, expected",
     [
@@ -199,15 +209,7 @@ def test_fetch_poster_errors(monkeypatch, exc, expected):
         raise exc
 
     monkeypatch.setattr(app.requests, "get", raise_exc, raising=False)
-    monkeypatch.setattr(
-        app.requests,
-        "exceptions",
-        types.SimpleNamespace(
-            Timeout=Timeout,
-            RequestException=RequestException
-        ),
-        raising=False
-    )
+    monkeypatch.setattr(app.requests, "exceptions", types.SimpleNamespace(Timeout=Timeout, RequestException=RequestException), raising=False)
     monkeypatch.setenv("TMDB_API_KEY", "dummy")
     errors = []
     monkeypatch.setattr(app.st, "error", lambda msg: errors.append(msg))
@@ -215,3 +217,4 @@ def test_fetch_poster_errors(monkeypatch, exc, expected):
     result = app.fetch_poster(123)
     assert result == "https://via.placeholder.com/200x300?text=No+Image"
     assert expected in errors[0]
+
